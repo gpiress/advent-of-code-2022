@@ -7,9 +7,9 @@ const INPUT_LINES = readFileSync('input.in', 'utf-8').split('\r\n');
 
 // Solution logic
 
-const doContain = (first, second) => {
-    const [firstStart, firstEnd] = first.split('-').map(numberStr => +numberStr);
-    const [secondStart, secondEnd] = second.split('-').map(numberStr => +numberStr);
+const doContain = ([first, second]) => {
+    const [firstStart, firstEnd] = first;
+    const [secondStart, secondEnd] = second;
 
     // check if first contains second
     if (firstStart <= secondStart && firstEnd >= secondEnd) {
@@ -24,13 +24,9 @@ const doContain = (first, second) => {
     return false;
 }
 
-const doOverlap = (first, second) => {
-    if (doContain(first, second)) {
-        return true;
-    }
-
-    const [firstStart, firstEnd] = first.split('-').map(numberStr => +numberStr);
-    const [secondStart, secondEnd] = second.split('-').map(numberStr => +numberStr);
+const doOverlap = ([first, second]) => {
+    const [firstStart, firstEnd] = first;
+    const [secondStart, secondEnd] = second;
 
     if (firstStart <= secondStart && firstEnd >= secondStart) {
         return true;
@@ -43,11 +39,20 @@ const doOverlap = (first, second) => {
     return false;
 }
 
+const splitAndConvertInput = (elvesRanges) => {
+    const [first, second] = elvesRanges;
+    const firstNumbers = first.split('-').map(numberStr => +numberStr);
+    const secondNumbers = second.split('-').map(numberStr => +numberStr);
+
+    return [firstNumbers, secondNumbers];
+}
+
 const firstPart = (allReadings) => {
+
     const containedPairs = allReadings
         .map(line => line.split(','))
-        .map(([first, second]) => doContain(first, second))
-        .filter((contained) => contained === true)
+        .map(splitAndConvertInput)
+        .filter(doContain)
         .length;
 
     console.log({containedPairs});
@@ -56,8 +61,8 @@ const firstPart = (allReadings) => {
 const secondPart = (allReadings) => {
     const overlappingPairs = allReadings
         .map(line => line.split(','))
-        .map(([first, second]) => doOverlap(first, second))
-        .filter((overlap) => overlap === true)
+        .map(splitAndConvertInput)
+        .filter((ranges) => doContain(ranges) || doOverlap(ranges))
         .length;
 
     console.log({overlappingPairs});
